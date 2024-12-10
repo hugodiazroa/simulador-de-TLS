@@ -67,88 +67,47 @@ Simulación comparativa de TLS 1.2, TLS 1.3 y etc.
 = Historia y evolución de TLS
 
 = Introducción
-
-Transport Layer Security (TLS) is the cornerstone of secure communication in the modern digital age, ensuring data confidentiality, integrity, and authentication across diverse applications like web browsing, email, and VoIP. Over the years, TLS has undergone significant revisions to adapt to evolving security threats and performance demands. This document explores TLS's evolution, with a focus on TLS 1.3, its operation, key improvements, and a comparative analysis with earlier versions. We will also evaluate the code implementation simulating TLS 1.3, followed by insights into its broader importance and potential advancements.
+La seguridad de la capa de transporte (TLS, por Transport Layer Security) es la piedra angular de la comunicación segura en la era digital moderna, ya que garantiza la confidencialidad, integridad y autenticación de los datos en diversas aplicaciones como HTTPS, Tor, correos electrónicos y VoIP. A lo largo de los años, TLS se ha sometido a importantes revisiones para adaptarse a la evolución de las amenazas a la seguridad que trajo el desarrollo de la criptografía. El presente documento explora la evolución de TLS, centrándose en la comparativa entre TLS 1.2, TLS 1.3 y una versión de TLS improvisada por el autor. Esto se logrará mediante la implementación de código que simula estas versiones de TLS, en específico el handshake (apretón de manos).
 
 ---
 
-== Understanding TLS and the Evolution to TLS 1.3  
+== Comprendiendo TLS y su evolución a TLS 1.3
 
-=== TLS 1.1 and Its Features  
+=== TLS 1.1 y sus características
 
-TLS 1.1, introduced in 2006, improved upon its predecessor TLS 1.0 by mitigating vulnerabilities such as the CBC (Cipher Block Chaining) padding oracle attack. Key features included:  
-- Initialization Vector (IV) Security: Implemented explicit IVs to enhance CBC mode encryption by ensuring randomness for each message.  
-- Backward Compatibility: Supported legacy systems but did not significantly advance key exchange or handshake mechanisms.  
+Introducido en 2006, TLS 1.1 mejoró TLS 1.0 al abordar vulnerabilidades como el ataque de oráculo de relleno CBC (Cipher Block Chaining), mejorando notablemente el cifrado en modo CBC con vectores de inicialización explícitos para garantizar la aleatoriedad de los mensajes, al tiempo que mantenía la compatibilidad con sistemas heredados. Sin embargo, ofrecía avances mínimos en los mecanismos de intercambio de claves y handshake, lo que provocó su rápida obsolescencia debido a las limitadas mejoras tanto en seguridad como en rendimiento.
 
-Despite these improvements, TLS 1.1 quickly became obsolete due to limited enhancements in both security and performance.  
+=== Avances en TLS 1.2
 
-=== Advancements in TLS 1.2  
+Lanzada en 2008, TLS 1.2 solucionó vulnerabilidades presentes en versiones anteriores e introdujo mejoras significativas en las operaciones criptográficas. Entre sus principales innovaciones se encuentra la flexibilidad para elegir algoritmos hash seguros, sustituyendo los anticuados MD5 y SHA-1 por SHA-256 por defecto, reduciendo así la susceptibilidad a las colisiones. La introducción del Modo Galois/Contador (GCM) mejoró la seguridad al combinar el cifrado y la verificación de la integridad en una sola operación. Además, TLS 1.2 incorporó soporte para Criptografía de Curva Elíptica (ECC), ofreciendo mecanismos de intercambio de claves más eficientes y seguros en comparación con el tradicional RSA. Otra mejora notable fue la capacidad de negociar suites de cifrado personalizables durante el proceso de apreton de manos, lo que proporciona una mayor adaptabilidad a los distintos requisitos de seguridad.
 
-TLS 1.2, released in 2008, addressed the weaknesses of earlier versions and introduced flexibility in cryptographic operations. Key innovations included:  
-1. Hashing Algorithm Flexibility: Replaced MD5 and SHA-1 with SHA-256 as default, reducing vulnerability to collisions.  
-2. Authenticated Encryption: Introduced Galois/Counter Mode (GCM), providing both encryption and integrity in a single operation.  
-3. Elliptic Curve Cryptography (ECC): Supported ECC for more efficient and secure key exchanges compared to RSA.  
-4. Customizable Cipher Suites: Allowed negotiation of cryptographic algorithms during the handshake, increasing adaptability.  
-
-While TLS 1.2 became the standard for over a decade, its reliance on RSA key exchanges and complex handshake mechanisms left room for optimization and modernization.  
-
-=== TLS 1.3: A Modern Solution  
-
-Released in 2018, TLS 1.3 redefined the protocol, prioritizing both security and performance. It simplified the handshake process, eliminated legacy algorithms, and reduced latency. Major features of TLS 1.3 include:  
-
-1. Simplified Handshake Process:  
-   - Reduced latency by requiring a single round-trip for handshake completion (down from two in TLS 1.2).  
-   - Introduced "0-RTT" (Zero Round-Trip Time) resumption, enabling near-instant secure connections for repeat sessions.  
-   
-2. Forward Secrecy by Default:  
-   - Adopted ephemeral Diffie-Hellman (DHE) for key exchanges, ensuring that session keys cannot be compromised even if long-term private keys are leaked.  
-   
-3. Streamlined Cipher Suites:  
-   - Removed weak and obsolete algorithms like RSA key exchange, MD5, and static Diffie-Hellman.  
-   - Standardized AES-GCM, AES-CCM, and ChaCha20-Poly1305 for encryption.  
-   
-4. Improved Privacy:  
-   - Encrypted more handshake data, including the server certificate, to reduce information visible to attackers.  
+A pesar de sus avances, TLS 1.2 no estaba exento de limitaciones. Su dependencia de los intercambios de claves RSA y la complejidad de sus mecanismos de negociación pusieron de manifiesto la necesidad de optimización y modernización. No obstante, TLS 1.2 marcó la pauta de las comunicaciones seguras durante más de una década, salvando las distancias entre las vulnerabilidades de protocolos anteriores y los sólidos avances introducidos en iteraciones posteriores.
 
 
-= Comparison of TLS Versions  
+=== TLS 1.3: una solución moderna
+
+Lanzado en 2018, TLS 1.3 aportó avances significativos a la comunicación segura en Internet al centrarse tanto en la seguridad como en el rendimiento. El protocolo simplificó el proceso de enlace, eliminó algoritmos obsoletos y redujo la latencia de la conexión. Una de sus mejoras más notables es la simplificación del protocolo de enlace, que ahora requiere un único viaje de ida y vuelta para establecer una conexión segura, frente a los dos de TLS 1.2. Además, introduce la reanudación «0-RTT», que permite conexiones seguras casi instantáneas para sesiones repetidas.
+
+TLS 1.3 también da prioridad a las medidas de seguridad sólidas. El secreto de transmisión se aplica por defecto mediante el uso de intercambios efímeros de claves Diffie-Hellman, lo que garantiza que las claves de sesión permanezcan seguras incluso si las claves privadas a largo plazo se ven comprometidas. El protocolo ha simplificado las suites de cifrado, eliminando algoritmos débiles como el intercambio de claves RSA y MD5, y estandarizando métodos de cifrado modernos como AES-GCM, AES-CCM y ChaCha20-Poly1305. La privacidad mejora aún más al cifrar más datos del protocolo de enlace, incluido el certificado del servidor, lo que reduce la información disponible para posibles atacantes.
+
+
+= Comparación de versiones de TLS
 
 #table(
   columns: 4,
   [], [TLS 1.1], [TLS 1.2], [TLS 1.3],
 
-  [Key Exchange], [RSA], [RSA, DHE, ECDHE], [ECDHE only],
-  [Hashing Algorithm], [MD5, SHA-1], [SHA-256], [SHA-256],
-  [Handshake Latency], [2 round-trips], [2 round-trips], [1 round-trip (0-RTT optional)],
-  [Cipher Suites], [Static, CBC-based algorithms], [Configurable, including GCM], [Streamlined, AEAD only],
-  [Forward Secrecy], [Optional], [Optional], [Mandatory],
-  [Obsolete Features Removed], [No], [No], [Yes],
+  [Intercambio de claves], [RSA], [RSA, DHE, ECDHE], [Sólo ECDHE],
+  [Algoritmo hash], [MD5, SHA-1], [SHA-256], [SHA-256],
+  [Latencia de Handshake], [2 viajes de ida y vuelta], [2 viajes de ida y vuelta], [1 viaje de ida y vuelta (0-RTT opcional)],
+  [Suites de cifrado], [Algoritmos estáticos basados en CBC], [Configurable, incluido GCM], [Optimizado, sólo AEAD],
+  [Secreto hacia adelante], [Opcional], [Opcional], [Obligatorio],
+  [Características obsoletas eliminadas], [No], [No], [Sí],
+
 )
-
-
-== Reviewing the TLS 1.3 Code Simulation  
-
-The provided Python code successfully simulates key aspects of TLS 1.3, including:  
-1. Key Agreement: The code uses ephemeral Diffie-Hellman (ECDHE) for secure key exchange.  
-2. Handshake Simulation: It illustrates the exchange of random values, public keys, and derivation of session keys using HKDF.  
-3. Encryption and Decryption: AES-GCM encryption ensures data confidentiality, while integrity is preserved through authenticated encryption.  
-4. Certificate Validation: A simulated Certificate Authority (CA) issues signed certificates for verifying server authenticity.  
-
-=== Strengths  
-- Clarity: The code provides explicit logs for every step, aiding analysis of the handshake and encryption process.  
-- Modern Practices: It leverages cryptographic libraries for secure implementation of TLS features.  
-
-=== Areas for Improvement  
-- Certificate Details: Expand on the CA's functionality to include validation of certificate chains and expiration checks.  
-- Error Handling: Add robust exception handling to manage edge cases like invalid keys or failed encryption operations.  
-- Performance Testing: Include metrics to measure the simulation's efficiency compared to TLS 1.2.  
 
 ---
 
-== Conclusion  
+== Conclusión
 
-The evolution of TLS, culminating in TLS 1.3, exemplifies the critical role of secure communication protocols in a digitally interconnected world. As the backbone of internet security, TLS safeguards the privacy and integrity of countless daily interactions, from online banking to remote work and cloud-based services. The advancements in TLS 1.3, particularly its streamlined handshake, mandatory forward secrecy, and elimination of legacy vulnerabilities, demonstrate how cryptographic innovation can address both longstanding and emerging security challenges.  
-
-The importance of studying TLS lies not only in understanding how it protects data but also in its broader implications for trust in digital systems. Secure protocols like TLS enable the proliferation of technologies such as IoT, 5G networks, and decentralized applications, ensuring they operate safely and efficiently. TLS 1.3's emphasis on performance and security sets a new standard for cryptographic protocols, paving the way for advancements in areas like quantum-resistant encryption and zero-trust architectures.  
-
-Beyond technical applications, TLS also highlights the necessity of ongoing collaboration between academia, industry, and standards bodies to adapt to an ever-changing threat landscape. Its impact extends far beyond web browsers, underscoring the significance of robust security mechanisms in fostering innovation and maintaining the stability of our increasingly digital society.
+TLS 1.3 ha sido ampliamente referenciado en la investigación por su sólida seguridad, rendimiento mejorado y avances respecto a versiones anteriores. Está ampliamente implementado en navegadores, servidores y servicios en la nube, lo que pone de relieve su impacto práctico. El protocolo sigue siendo muy relevante, abordando los retos de seguridad modernos e inspirando mejoras continuas, como la criptografía resistente a la cuántica y los mecanismos 0-RTT mejorados. Estos avances refuerzan el papel fundamental de TLS 1.3 en la comunicación segura.
