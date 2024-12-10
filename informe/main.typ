@@ -68,14 +68,9 @@ Simulación comparativa de TLS 1.2, TLS 1.3 y etc.
 
 \
 == Simulación de TLS
-TLS es la base de la comunicación segura en Internet, ya que ofrece cifrado robusto, autenticación y eficiencia. Este proyecto desarrolla un sistema para simular su funcionamiento, centrándose en el proceso de handshake. Este sistema informático compara TLS 1.3 con TLS 1.2, mostrando las mejoras y comparándolas con una versión mala de TLS (TLS etc.) hecha por mí.
+TLS es la base de la comunicación segura en Internet, ya que ofrece cifrado robusto, autenticación y eficiencia. Este proyecto desarrolla un sistema para simular su funcionamiento, centrándose en el proceso de handshake. Este sistema informático compara TLS 1.3 con TLS 1.2.
 
-\
-== TLS etc.
 
-"TLS etc." es una version de TLS hecha por mi e implementada usando firmas y encripcion de Pretty Good Privacy (PGP). Esto es poco practico por muchos motivos, pero el mas obvio es el de lentitud y encripciones mucho mas grandes que las de TLS 1.2 y TLS 1.3.
-
-\
 \
 = Historia y evolución de TLS
 
