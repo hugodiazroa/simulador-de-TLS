@@ -50,11 +50,13 @@ Simulación comparativa de TLS 1.2, TLS 1.3 y etc.
 
 \
 \
-],
-  author:"Lya Díaz Roa\nhugodiazroa: https://github.com/hugodiazroa", 
-  date: datetime(year: 2024, month: 12, day: 09),
-  abstract: [
+\
 
+],
+  author:"Lya Díaz Roa\nhugodiazroa: https://github.com/hugodiazroa",
+  date: datetime(year: 2025, month: 02, day: 28),
+  abstract: [
+Este documento presenta un simulador de TLS diseñado para comparar las versiones 1.2 y 1.3 del protocolo, así como una versión experimental desarrollada por el autor. Se centra en el proceso de handshake y explora las mejoras y diferencias entre estas versiones. La simulación proporciona una comprensión clara de las ventajas de TLS 1.3 en términos de seguridad y rendimiento, y sirve como una herramienta educativa para aquellos interesados en la evolución de los protocolos de seguridad en la comunicación digital.
     ],
 
   chapter-pagebreak: false,
