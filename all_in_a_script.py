@@ -1,62 +1,9 @@
 import tkinter as tk
+from datetime import datetime, timedelta
 from tkinter import scrolledtext
 import  random
 import time
 from cryptography import x509
-from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
-
-# Generate a private key
-private_key = rsa.generate_private_key(
-    public_exponent=65537,
-    key_size=2048,
-    backend=default_backend()
-)
-
-# Generate a public key
-public_key = private_key.public_key()
-
-# Create a self-signed certificate
-subject = issuer = x509.Name([
-    x509.NameAttribute(NameOID.COUNTRY_NAME, u"US"),
-    x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"California"),
-    x509.NameAttribute(NameOID.LOCALITY_NAME, u"San Francisco"),
-    x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"My Company"),
-    x509.NameAttribute(NameOID.COMMON_NAME, u"mycompany.com"),
-])
-certificate = x509.CertificateBuilder().subject_name(
-    subject
-).issuer_name(
-    issuer
-).public_key(
-    public_key
-).serial_number(
-    x509.random_serial_number()
-).not_valid_before(
-    datetime.utcnow()
-).not_valid_after(
-    # Certificate is valid for 10 days
-    datetime.utcnow() + timedelta(days=10)
-).add_extension(
-    x509.SubjectAlternativeName([x509.DNSName(u"localhost")]),
-    critical=False,
-).sign(private_key, hashes.SHA256(), default_backend())
-
-# Serialize the certificate and keys
-cert_pem = certificate.public_bytes(serialization.Encoding.PEM)
-private_key_pem = private_key.private_bytes(
-    encoding=serialization.Encoding.PEM,
-    format=serialization.PrivateFormat.TraditionalOpenSSL,
-    encryption_algorithm=serialization.NoEncryption()
-)
-public_key_pem = public_key.public_bytes(
-    encoding=serialization.Encoding.PEM,
-    format=serialization.PublicFormat.SubjectPublicKeyInfo
-)
-
 
 
 class TLSVisualizerApp:
@@ -105,13 +52,10 @@ class TLSVisualizerApp:
 
 
         self.log_text.insert(tk.END, "Certificate:\n", "server")
-        self.log_text.insert(tk.END, cert_pem.decode('utf-8'), "server")
 
         self.log_text.insert(tk.END, "Public Key:\n", "server")
-        self.log_text.insert(tk.END, public_key_pem.decode('utf-8'), "server")
 
         self.log_text.insert(tk.END, "Private Key:\n", "server")
-        self.log_text.insert(tk.END, private_key_pem.decode('utf-8'), "server")
 
         self.log_text.insert(tk.END, "\nHandshake\n\n", "explanation")
         self.log_text.insert(tk.END, "ClientHello\n\n", "explanation")
@@ -176,12 +120,16 @@ class TLSVisualizerApp:
         self.log_text.insert(tk.END, "Extensions:\n", "server")
         self.log_text.insert(tk.END, "extensions = []\n", "server")
 
-        self.log_text.insert(tk.END, "\nServer send certificate chain\n\n", "explanation")
-        self.log_text.insert(tk.END, "The server sends a certificate chain to the client, containing the following certificates:\n", "explanation")
+        time.sleep(1)  # Add a one-second delay here
+
+        self.log_text.insert(tk.END, "\n\nServer send certificate chain\n\n", "explanation")
+        self.log_text.insert(tk.END, "The server sends a certificate chain to the client")
 
         self.log_text.insert(tk.END, "\nClient Key Exchange\n\n", "explanation")
         self.log_text.insert(tk.END, "The client sends a pre-master secret to the server, encrypted with the server's public key.\n", "explanation")
         self.log_text.insert(tk.END, "Pre-master secret:\n", "client")
+
+        self.log_text.see(tk.END)
 
 
 
