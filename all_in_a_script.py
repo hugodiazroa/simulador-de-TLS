@@ -10,8 +10,14 @@ import hashlib
 gpgClient = gnupg.GPG()
 gpgServer = gnupg.GPG()
 
-input_dataClient = gpgClient.gen_key_input()
-input_dataServer = gpgServer.gen_key_input()
+input_dataClient = gpgClient.gen_key_input(
+    name_email='client@example.com',
+    passphrase='client_passphrase'
+)
+input_dataServer = gpgServer.gen_key_input(
+    name_email='server@example.com',
+    passphrase='server_passphrase'
+)
 keyClient = gpgClient.gen_key(input_dataClient)
 keyServer = gpgServer.gen_key(input_dataServer)
 
@@ -21,8 +27,8 @@ public_keyServer = gpgServer.export_keys(keyServer.fingerprint)
 #print("Public Key:\n", public_keyClient)
 
 # Export the private keys
-private_keyClient = gpgClient.export_keys(keyClient.fingerprint, True, passphrase='client')
-private_keyServer = gpgServer.export_keys(keyServer.fingerprint, True, passphrase='server')
+private_keyClient = gpgClient.export_keys(keyClient.fingerprint, True, passphrase='client_passphrase')
+private_keyServer = gpgServer.export_keys(keyServer.fingerprint, True, passphrase='server_passphrase')
 #print("Private Key:\n", private_key)
 
 
@@ -56,14 +62,16 @@ class TLSVisualizerApp:
         self.reset_button = tk.Button(button_frame, text="Reset", command=self.reset_simulation, bg="yellow", fg="black")
         self.reset_button.pack(side=tk.LEFT, padx=5)
 
-        self.debug_button = tk.Button(button_frame, text="Toggle debug mode", command=self.debug_toggle, bg="blue", fg="black")
-        self.debug_button.pack(side=tk.LEFT, padx=5)
+#        self.debug_button = tk.Button(button_frame, text="Toggle debug mode", command=self.debug_toggle, bg="blue", fg="black")
+#        self.debug_button.pack(side=tk.LEFT, padx=5)
 
         # Create a scrolled text widget for the log
         self.log_text = scrolledtext.ScrolledText(self.root, wrap=tk.WORD, width=100, height=50, bg="black", fg="white")
         self.log_text.pack(padx=10, pady=10)
 
     def start_1_2(self):
+        self.log_text.delete(1.0, tk.END)
+
         self.log_text.tag_configure("explanation", foreground="white")
         self.log_text.tag_configure("server", foreground="blue")
         self.log_text.tag_configure("client", foreground="red")
@@ -163,10 +171,12 @@ class TLSVisualizerApp:
 
 
     def start_1_3(self):
-        self.log_text.insert(tk.END, "Simulation of TLS 1.3.\n\n")
+        self.log_text.delete(1.0, tk.END)
+
         self.log_text.tag_configure("explanation", foreground="white")
         self.log_text.tag_configure("server", foreground="blue")
         self.log_text.tag_configure("client", foreground="red")
+        self.log_text.tag_configure("note", foreground="grey")
 
         self.log_text.insert(tk.END, "Simulation of TLS 1.3\n\n", "explanation")
         self.log_text.insert(tk.END, "Server Parameters\n", "explanation")
