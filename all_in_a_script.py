@@ -1,9 +1,30 @@
 import tkinter as tk
-from datetime import datetime, timedelta
 from tkinter import scrolledtext
 import  random
 import time
-from cryptography import x509
+import gnupg
+
+
+# Initialize GPG objects
+gpgClient = gnupg.GPG()
+gpgServer = gnupg.GPG()
+
+# Generate new key pairs todo: fix this
+input_dataClient = gpgClient.gen_key_input(name_email='client@example.com', passphrase='client')
+input_dataServer = gpgServer.gen_key_input(name_email='server@example.com', passphrase='server')
+keyClient = gpgClient.gen_key(input_dataClient)
+keyServer = gpgServer.gen_key(input_dataServer)
+
+# Export the public keys
+public_keyClient = gpgClient.export_keys(keyClient.fingerprint)
+public_keyServer = gpgServer.export_keys(keyServer.fingerprint)
+#print("Public Key:\n", public_keyClient)
+
+# Export the private keys
+private_keyClient = gpgClient.export_keys(keyClient.fingerprint, True, passphrase='client')
+private_keyServer = gpgServer.export_keys(keyServer.fingerprint, True, passphrase='server')
+#print("Private Key:\n", private_key)
+
 
 
 class TLSVisualizerApp:
@@ -46,10 +67,12 @@ class TLSVisualizerApp:
         self.log_text.tag_configure("explanation", foreground="white")
         self.log_text.tag_configure("server", foreground="blue")
         self.log_text.tag_configure("client", foreground="red")
+        self.log_text.tag_configure("note", foreground="grey")
 
         self.log_text.insert(tk.END, "Simulation of TLS 1.2\n\n", "explanation")
         self.log_text.insert(tk.END, "Server Parameters\n", "explanation")
-
+        #todo: fix this grammar
+        self.log_text.insert(tk.END, "TLS uses a X.509 certificate, but for sake of simplicity we will use PGP\n","note")
 
         self.log_text.insert(tk.END, "Certificate:\n", "server")
 
@@ -140,6 +163,32 @@ class TLSVisualizerApp:
 
     def start_1_3(self):
         self.log_text.insert(tk.END, "Simulation of TLS 1.3.\n\n")
+        self.log_text.tag_configure("explanation", foreground="white")
+        self.log_text.tag_configure("server", foreground="blue")
+        self.log_text.tag_configure("client", foreground="red")
+
+        self.log_text.insert(tk.END, "Simulation of TLS 1.3\n\n", "explanation")
+        self.log_text.insert(tk.END, "Server Parameters\n", "explanation")
+
+        self.log_text.insert(tk.END, "Certificate:\n", "server")
+
+        self.log_text.insert(tk.END, "Public Key:\n", "server")
+
+        self.log_text.insert(tk.END, "Private Key:\n", "server")
+
+        self.log_text.insert(tk.END, "\nHandshake\n\n", "explanation")
+        self.log_text.insert(tk.END, "ClientHello\n\n", "explanation")
+
+        self.log_text.insert(tk.END, "The client sends a ClientHello message to the server, containing the following information:\n", "explanation")
+
+
+        self.log_text.insert(tk.END, "\nServerHello\n\n", "explanation")
+
+        self.log_text.insert(tk.END, "The server sends a ServerHello message to the client, containing the following information:\n", "explanation")
+
+        time.sleep(1)  # Add a one-second delay here
+
+        self.log_text.see(tk.END)
 
     def debug_toggle(self):
         self.debug = not self.debug
