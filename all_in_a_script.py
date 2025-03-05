@@ -154,12 +154,35 @@ class TLSVisualizerApp:
 
         #time.sleep(1)  # Add a one-second delay here
 
-        self.log_text.insert(tk.END, "\n\nServer send certificate chain\n\n", "explanation")
-        self.log_text.insert(tk.END, "The server sends a certificate chain to the client")
-
         self.log_text.insert(tk.END, "\nClient Key Exchange\n\n", "explanation")
         self.log_text.insert(tk.END, "The client sends a pre-master secret to the server, encrypted with the server's public key.\n", "explanation")
         self.log_text.insert(tk.END, "Pre-master secret:\n", "client")
+        pre_master_secret = random.getrandbits(256)
+        self.log_text.insert(tk.END, "pre_master_secret (not sent) = " + str(pre_master_secret) + "\n", "note")
+        self.log_text.insert(tk.END, "The client encrypts the pre-master secret with the server's public key\n", "note")
+        encrypted_pre_master_secret = gpgClient.encrypt(str(pre_master_secret), public_keyServer)
+        print(encrypted_pre_master_secret)
+        self.log_text.insert(tk.END, "Encrypted pre-master secret:\n", "client")
+        self.log_text.insert(tk.END, str(encrypted_pre_master_secret.data) + "\n", "client")
+        self.log_text.insert(tk.END, "Now will the server calculate the master-secret value used in this RSA exchange\n", "note")
+        server_pre_master_secret = gpgServer.decrypt(encrypted_pre_master_secret.data, passphrase='server_passphrase')
+        server_master_secret = str(server_pre_master_secret) + "master secret" + str(client_random_1_2) + str(server_random_1_2)
+        self.log_text.insert(tk.END, "Master secret:\n", "server")
+        self.log_text.insert(tk.END, server_master_secret + "\n", "server")
+        self.log_text.insert(tk.END, "The server now calculates the session keys using the master secret\n", "note")
+        self.log_text.insert(tk.END, "In order to do this the server will generate a key expansion using the master secret\n", "note")
+        self.log_text.insert(tk.END, "After generating the key expansion, the server will extract the session keys using a pseudo-random function\n", "note")
+        self.log_text.insert(tk.END, "The server will then send a finished message to the client\n", "note")
+        self.log_text.insert(tk.END, "Key expansion:\n", "server")
+        key_expansion_hash = hashlib.sha256(server_master_secret.encode()).hexdigest()
+        key_expansion = str(key_expansion_hash) + "key expansion" + str(client_random_1_2) + str(server_random_1_2)
+        self.log_text.insert(tk.END, key_expansion + "\n", "server")
+        self.log_text.insert(tk.END, "Session keys:\n", "note")
+        # we use a pseudo-random function that takes the key expansion as input and outputs a 10
+
+
+
+
 
         self.log_text.see(tk.END)
 
