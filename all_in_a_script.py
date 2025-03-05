@@ -161,9 +161,13 @@ class TLSVisualizerApp:
         self.log_text.insert(tk.END, "pre_master_secret (not sent) = " + str(pre_master_secret) + "\n", "note")
         self.log_text.insert(tk.END, "The client encrypts the pre-master secret with the server's public key\n", "note")
         encrypted_pre_master_secret = gpgClient.encrypt(str(pre_master_secret), public_keyServer)
-        print(encrypted_pre_master_secret)
-        self.log_text.insert(tk.END, "Encrypted pre-master secret:\n", "client")
-        self.log_text.insert(tk.END, str(encrypted_pre_master_secret.data) + "\n", "client")
+        if encrypted_pre_master_secret.ok:
+            self.log_text.insert(tk.END, "Encrypted pre-master secret:\n", "client")
+            self.log_text.insert(tk.END, str(encrypted_pre_master_secret.data) + "\n", "client")
+        else:
+            self.log_text.insert(tk.END, "Encryption failed.\n", "client")
+            self.log_text.insert(tk.END, "Status: " + str(encrypted_pre_master_secret.status) + "\n", "client")
+            self.log_text.insert(tk.END, "Error: " + str(encrypted_pre_master_secret.stderr) + "\n", "client")
         self.log_text.insert(tk.END, "Now will the server calculate the master-secret value used in this RSA exchange\n", "note")
         server_pre_master_secret = gpgServer.decrypt(encrypted_pre_master_secret.data, passphrase='server_passphrase')
         server_master_secret = str(server_pre_master_secret) + "master secret" + str(client_random_1_2) + str(server_random_1_2)
