@@ -157,6 +157,12 @@ Dentro de esta interfaz hay tres botones, uno para ejecutar TLS 1.2, otro para T
 Una vez que se ejecuta uno de los protocolos, se muestra en la pantalla la informacion de los mensajes enviados y recibidos, asi como el acuerdo de llave y el mensaje de confirmacion de la llave.
 Los mensajes estan coloreados para diferenciar entre explicaciones, notas, los mensajes enviados por el cliente y los mensajes enviados por el servidor.
 
+== Demo
+
+A continuacion se muestra una demostracion del simulador de TLS, donde se ejecuta TLS 1.2 y TLS 1.3, mostrando los mensajes enviados y recibidos, el acuerdo de llave y el mensaje de confirmacion de la llave.
+
+
+
 #pagebreak()
 = Comparación de versiones de TLS
 
