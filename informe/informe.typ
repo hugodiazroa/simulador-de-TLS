@@ -41,7 +41,7 @@
 \
 
   Simulador de TLS:
-Simulación comparativa de TLS 1.2, TLS 1.3 y etc.
+Simulación comparativa de TLS 1.2 y TLS 1.3
 
 \
 \
@@ -50,11 +50,13 @@ Simulación comparativa de TLS 1.2, TLS 1.3 y etc.
 
 \
 \
+\
+
 ],
   author:"Lya Díaz Roa\nhugodiazroa: https://github.com/hugodiazroa", 
-  date: datetime(year: 2024, month: 12, day: 09),
+  date: datetime(year: 2025, month: 02, day: 28),
   abstract: [
-lorem ipwum
+Este documento presenta un simulador de TLS diseñado para comparar las versiones 1.2 y 1.3 del protocolo, así como una versión experimental desarrollada por el autor. Se centra en el proceso de handshake y explora las mejoras y diferencias entre estas versiones. La simulación proporciona una comprensión clara de las ventajas de TLS 1.3 en términos de seguridad y rendimiento, y sirve como una herramienta educativa para aquellos interesados en la evolución de los protocolos de seguridad en la comunicación digital.
     ],
 
   chapter-pagebreak: false,
@@ -95,6 +97,65 @@ A pesar de sus avances, TLS 1.2 no estaba exento de limitaciones. Su dependencia
 Lanzado en 2018, TLS 1.3 aportó avances significativos a la comunicación segura en Internet al centrarse tanto en la seguridad como en el rendimiento. El protocolo simplificó el proceso de enlace, eliminó algoritmos obsoletos y redujo la latencia de la conexión. Una de sus mejoras más notables es la simplificación del protocolo de enlace, que ahora requiere un único viaje de ida y vuelta para establecer una conexión segura, frente a los dos de TLS 1.2. Además, introduce la reanudación «0-RTT», que permite conexiones seguras casi instantáneas para sesiones repetidas.
 
 TLS 1.3 también da prioridad a las medidas de seguridad sólidas. El secreto de transmisión se aplica por defecto mediante el uso de intercambios efímeros de claves Diffie-Hellman, lo que garantiza que las claves de sesión permanezcan seguras incluso si las claves privadas a largo plazo se ven comprometidas. El protocolo ha simplificado las suites de cifrado, eliminando algoritmos débiles como el intercambio de claves RSA y MD5, y estandarizando métodos de cifrado modernos como AES-GCM, AES-CCM y ChaCha20-Poly1305. La privacidad mejora aún más al cifrar más datos del protocolo de enlace, incluido el certificado del servidor, lo que reduce la información disponible para posibles atacantes.
+#pagebreak()
+= Funcionamiento interno del apreton de manos de TLS
+
+TLS tiene un proceso de handshake que se compone de varias etapas. En TLS 1.2, el handshake consta de dos viajes de ida y vuelta, mientras que en TLS 1.3 se reduce a un solo viaje de ida y vuelta. A continuación, se detallan las etapas del handshake en ambas versiones:
+== TLS 1.2
+
+TLS 1.2 consta de las siguientes etapas en el proceso de apreton de manos:
+1. Cliente envía un mensaje "ClientHello" al servidor con:
+    - Versiónes de TLS soportadas
+    - Número aleatorio con bits de tiempo y aleatorios
+    - Identificador de sesión
+    - Suites de cifrado soportadas
+    - Extensiones
+
+2. Servidor responde con un mensaje "ServerHello" que contiene:
+    - Versión de TLS seleccionada
+    - Número aleatorio con bits de tiempo y aleatorios
+    - Identificador de sesión
+    - Suite de cifrado seleccionada
+    - Certificado del servidor
+    - Parámetros de intercambio de claves
+
+3.
+
+
+
+== TLS 1.3
+
+1. Cliente envía un mensaje "ClientHello" al servidor con:
+    - Versión de TLS soportada
+    - Número aleatorio
+    - Identificador de sesión
+    - Suites de cifrado soportadas
+    - Extensiones
+
+2. Servidor responde con un mensaje "ServerHello" que contiene:
+    - Versión de TLS seleccionada
+    - Número aleatorio
+    - Identificador de sesión
+    - Suite de cifrado seleccionada
+    - Extensiones
+
+
+#pagebreak()
+= El simulador
+
+Nuestro simulador de TLS se basa en un modelo simplificado del proceso de handshake de TLS 1.2 y TLS 1.3.
+La diferencia radica en que se han eliminado pasos para simplificar el proceso y centrarse en las diferencias clave entre las versiones, asi como en los pricipios criptograficos que hacen funcionar a TLS 1.3.
+En particular, el simulador muestra un acuerdo de llave usando el algoritmo de intercambio de llaves Diffie-Hellman, que es usado por TLS 1.3 para garantizar la seguridad de las llaves de sesion.
+En vez de mandar un numero aleatorio en el clientHello, se manda una exponenciacion modular de un numero aleatorio con un generador de numeros primos, que es el secreto compartido entre el cliente y el servidor.
+\
+Otra diferencia que se puede apreciar es el cambio del certificado x509 por el uso de PGP. Esto se debe a que no se logro implementar el uso de certificados x509 en el simulador, por lo que se opto por usar algo similar.
+Este protocolo se usa en la parte de la simulacion de TLS 1.2, para acordan una llave simetrica entre el cliente y el servidor usando RSA.
+\
+\
+El simulador usa una GUI escrita en Python con la libreria Tkinter, que permite al usuario ver las ejecuciones de TLS 1.2 y TLS 1.3 de forma mas amigable.
+Dentro de esta interfaz hay tres botones, uno para ejecutar TLS 1.2, otro para TLS 1.3 y otro para limpiar la pantalla.
+Una vez que se ejecuta uno de los protocolos, se muestra en la pantalla la informacion de los mensajes enviados y recibidos, asi como el acuerdo de llave y el mensaje de confirmacion de la llave.
+Los mensajes estan coloreados para diferenciar entre explicaciones, notas, los mensajes enviados por el cliente y los mensajes enviados por el servidor.
 
 #pagebreak()
 = Comparación de versiones de TLS
@@ -113,6 +174,4 @@ TLS 1.3 también da prioridad a las medidas de seguridad sólidas. El secreto de
 )
 
 #pagebreak()
-== Conclusión
-
-TLS 1.3 ha sido ampliamente referenciado en la investigación por su sólida seguridad, rendimiento mejorado y avances respecto a versiones anteriores. Está ampliamente implementado en navegadores, servidores y servicios en la nube, lo que pone de relieve su impacto práctico. El protocolo sigue siendo muy relevante, abordando los retos de seguridad modernos e inspirando mejoras continuas, como la criptografía resistente a la cuántica y los mecanismos 0-RTT mejorados. Estos avances refuerzan el papel fundamental de TLS 1.3 en la comunicación segura.
+= Conclusión
